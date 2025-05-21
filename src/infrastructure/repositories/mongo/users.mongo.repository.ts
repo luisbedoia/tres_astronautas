@@ -6,7 +6,7 @@ import { Collection, ObjectId } from 'mongodb';
 import { UserDocument } from './types/user.document';
 
 @Injectable()
-export class UserMongoRepository implements IUsersRepository {
+export class UsersMongoRepository implements IUsersRepository {
   private readonly collection = 'users';
 
   constructor(private readonly dbService: DatabaseService) {}

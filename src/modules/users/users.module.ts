@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { UserMongoRepository } from '../../infrastructure/repositories/mongo/users.mongo.repository';
+import { UsersMongoRepository } from '../../infrastructure/repositories/mongo/users.mongo.repository';
 
 @Module({
   providers: [
     {
-      provide: 'IUserRepository',
-      useClass: UserMongoRepository,
+      provide: 'IUsersRepository',
+      useClass: UsersMongoRepository,
     },
   ],
-  exports: ['IUserRepository'],
+  exports: ['IUsersRepository'],
 })
 export class UsersModule {}

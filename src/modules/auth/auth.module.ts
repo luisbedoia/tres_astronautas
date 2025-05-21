@@ -4,6 +4,7 @@ import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { BcryptAdapter } from '../../infrastructure/crypto/bcrypt.adapter';
 import { UsersModule } from '../users/users.module';
+import { JwtStrategy } from '../../common/strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from '../users/users.module';
   controllers: [AuthController],
   providers: [
     AuthService,
+    JwtStrategy,
     {
       provide: 'ICrypto',
       useClass: BcryptAdapter,

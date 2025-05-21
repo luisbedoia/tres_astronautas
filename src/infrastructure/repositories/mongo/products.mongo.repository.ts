@@ -1,57 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
-import { IUserRepository } from '../../../domain/interfaces/users.repository.interface';
-import { User } from '../../../domain/entities/user.entity';
+import { IProductsRepository } from '../../../domain/interfaces/products.repository.interface';
+import { Product } from '../../../domain/entities/product.entity';
 import { Collection, ObjectId } from 'mongodb';
-import { UserDocument } from './types/user.document';
+import { ProductDocument } from './types/product.document';
 
 @Injectable()
-export class UserMongoRepository implements IUserRepository {
-  private readonly collection = 'users';
+export class ProductsMongoRepository implements IProductsRepository {
+  private readonly collection = 'products';
 
   constructor(private readonly dbService: DatabaseService) {}
 
-  private getCollection(): Collection<UserDocument> {
-    return this.dbService.getDb().collection<UserDocument>(this.collection);
+  private getCollection(): Collection<ProductDocument> {
+    return this.dbService.getDb().collection<ProductDocument>(this.collection);
   }
 
-  async save(data: User): Promise<string> {
-    const { id: _, ...userData } = data;
-    const doc: UserDocument = {
-      ...userData,
+  async save(data: Product): Promise<string> {
+    const { id: _, ownerId, ...productData } = data;
+    const doc: ProductDocument = {
+      ...productData,
+      ownerId: new ObjectId(ownerId),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     const result = await this.getCollection().insertOne(doc);
     return result.insertedId.toString();
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    const doc = await this.getCollection().findOne({ email });
-    if (!doc) return null;
-
-    return User.fromData({
-      id: doc._id?.toString() ?? '',
-      fullName: doc.fullName,
-      email: doc.email,
-      password: doc.password,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    });
-  }
-
-  async findById(id: string): Promise<User | null> {
-    const doc = await this.getCollection().findOne({ _id: new ObjectId(id) });
-    if (!doc) return null;
-
-    return User.fromData({
-      id: doc._id?.toString() ?? '',
-      fullName: doc.fullName,
-      email: doc.email,
-      password: doc.password,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    });
   }
 }

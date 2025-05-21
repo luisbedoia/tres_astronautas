@@ -1,11 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ProductsController } from './controllers/products.controller';
 import { ProductsService } from './services/products.service';
-import { DatabaseModule } from '../../infrastructure/database/database.module';
+import { ProductsMongoRepository } from '../../infrastructure/repositories/mongo/products.mongo.repository';
+import { UsersModule } from '../users/users.module';
+
 @Module({
+  imports: [UsersModule],
   controllers: [ProductsController],
-  providers: [ProductsService],
-  imports: [DatabaseModule],
-  exports: [ProductsService],
+  providers: [
+    ProductsService,
+    {
+      provide: 'IProductsRepository',
+      useClass: ProductsMongoRepository,
+    },
+  ],
 })
 export class ProductsModule {}

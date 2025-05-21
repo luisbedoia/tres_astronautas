@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { Product } from '../../../domain/entities/product.entity';
 import { IProductsRepository } from '../../../domain/interfaces/products.repository.interface';
 import { IUsersRepository } from '../../../domain/interfaces/users.repository.interface';
@@ -6,7 +6,9 @@ import { IUsersRepository } from '../../../domain/interfaces/users.repository.in
 @Injectable()
 export class ProductsService {
   constructor(
+    @Inject('IProductsRepository')
     private readonly productsRepository: IProductsRepository,
+    @Inject('IUsersRepository')
     private readonly usersRepository: IUsersRepository,
   ) {}
 
