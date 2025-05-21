@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DB_NAME=tres_astronautas_db
+      - JWT_SECRET=secret_key
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:dev  # Cambiamos a start:dev para desarrollo
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data: 

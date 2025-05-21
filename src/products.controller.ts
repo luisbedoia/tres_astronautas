@@ -18,7 +18,6 @@ export class ProductController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   create(
     @Body() dto: CreateProductDto,
-    @Header('Authorization', 'none') auth: string,
   ): string {
     return 'Product created';
   }
