@@ -37,12 +37,14 @@ export class ProductsService {
       ownerId,
     );
     if (product) {
-      throw new ConflictException('Product already exists');
+      throw new ConflictException([
+        `productId: ${productId} already exists for the user`,
+      ]);
     }
 
     const isValid = await this.coreService.validateProduct(productId, price);
     if (!isValid) {
-      throw new BadRequestException('Invalid product price');
+      throw new BadRequestException(['Product price must be greater than 10']);
     }
 
     const newProduct = Product.create(productId, name, price, ownerId);

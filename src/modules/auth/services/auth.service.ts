@@ -22,7 +22,9 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const user = await this.usersRepository.findByEmail(registerDto.email);
     if (user) {
-      throw new ConflictException('Email already exists');
+      throw new ConflictException([
+        `email: ${registerDto.email} already exists`,
+      ]);
     }
 
     const hashedPassword = await this.crypto.hash(registerDto.password);
@@ -40,7 +42,7 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const user = await this.usersRepository.findByEmail(loginDto.email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(['Invalid credentials']);
     }
 
     const isPasswordValid = await this.crypto.compare(
@@ -49,7 +51,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(['Invalid credentials']);
     }
 
     const payload = { sub: user.id, email: user.email };
