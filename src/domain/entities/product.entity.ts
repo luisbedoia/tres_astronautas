@@ -5,6 +5,7 @@ export enum ProductStatus {
 
 export class Product {
   id: string;
+  productId: number;
   name: string;
   price: number;
   ownerId: string;
@@ -16,8 +17,14 @@ export class Product {
     Object.assign(this, partial);
   }
 
-  static create(name: string, price: number, ownerId: string): Product {
+  static create(
+    productId: number,
+    name: string,
+    price: number,
+    ownerId: string,
+  ): Product {
     return new Product({
+      productId,
       name,
       price,
       ownerId,

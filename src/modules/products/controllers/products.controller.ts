@@ -33,6 +33,7 @@ export class ProductsController {
     @CurrentUser() user: JwtPayload,
   ): Promise<string> {
     return this.productsService.create(
+      createProductDto.productId,
       createProductDto.name,
       createProductDto.price,
       user.sub,
