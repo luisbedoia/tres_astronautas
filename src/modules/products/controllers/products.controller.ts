@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Put, Param } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -11,6 +11,7 @@ import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { JwtPayload } from '../../../common/interfaces/jwt-payload.interface';
 import { Product } from '../../../domain/entities/product.entity';
+import { EditProductDto, EditProductIdDto } from '../dto/edit-product.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -38,5 +39,22 @@ export class ProductsController {
       createProductDto.price,
       user.sub,
     );
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Edit a product' })
+  @ApiResponse({ status: 200, description: 'Product updated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async editProduct(
+    @Param() params: EditProductIdDto,
+    @Body() editProductDto: EditProductDto,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<string> {
+    console.log(params.id);
+    console.log(editProductDto);
+    console.log(user);
+    return await Promise.resolve('ok');
+    // return this.productsService.edit(id, editProductDto, user.sub);
   }
 }
