@@ -11,9 +11,8 @@ export class UserMongoRepository implements IUserRepository {
 
   async save(data: User): Promise<string> {
     const db = this.dbService.getDb();
-    const result = await db.collection(this.collection).insertOne({
-      ...data,
-    });
+    const { id, ...userWithoutId } = data;
+    const result = await db.collection(this.collection).insertOne(userWithoutId);
 
     return result.insertedId.toString();
   }
