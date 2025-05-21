@@ -1,21 +1,21 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Product } from '../../../domain/entities/product.entity';
-import { IProductRepository } from '../../../domain/interfaces/product.repository.interface';
-import { IUserRepository } from '../../../domain/interfaces/user.repository.interface';
+import { IProductsRepository } from '../../../domain/interfaces/products.repository.interface';
+import { IUsersRepository } from '../../../domain/interfaces/users.repository.interface';
 
 @Injectable()
 export class ProductsService {
   constructor(
-    private readonly productRepository: IProductRepository,
-    private readonly userRepository: IUserRepository,
+    private readonly productsRepository: IProductsRepository,
+    private readonly usersRepository: IUsersRepository,
   ) {}
 
   async create(name: string, price: number, ownerId: string): Promise<string> {
-    const user = await this.userRepository.findById(ownerId);
+    const user = await this.usersRepository.findById(ownerId);
     if (!user) {
       throw new UnauthorizedException('Unauthorized');
     }
     const product = Product.create(name, price, ownerId);
-    return await this.productRepository.save(product);
+    return await this.productsRepository.save(product);
   }
 }

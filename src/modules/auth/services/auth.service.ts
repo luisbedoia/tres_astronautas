@@ -5,7 +5,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IUserRepository } from '../../../domain/interfaces/user.repository.interface';
+import { IUsersRepository } from '../../../domain/interfaces/users.repository.interface';
 import { ICrypto } from '../../../domain/interfaces/crypto.interface';
 import { LoginDto, RegisterDto } from '../dto/auth.dto';
 import { User } from '../../../domain/entities/user.entity';
@@ -13,13 +13,14 @@ import { User } from '../../../domain/entities/user.entity';
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject('IUserRepository') private readonly userRepository: IUserRepository,
+    @Inject('IUsersRepository')
+    private readonly usersRepository: IUsersRepository,
     @Inject('ICrypto') private readonly crypto: ICrypto,
     private readonly jwtService: JwtService,
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const user = await this.userRepository.findByEmail(registerDto.email);
+    const user = await this.usersRepository.findByEmail(registerDto.email);
     if (user) {
       throw new ConflictException('Email already exists');
     }
@@ -31,13 +32,13 @@ export class AuthService {
       hashedPassword,
     );
 
-    const userId = await this.userRepository.save(newUser);
+    const userId = await this.usersRepository.save(newUser);
 
     return { id: userId };
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.userRepository.findByEmail(loginDto.email);
+    const user = await this.usersRepository.findByEmail(loginDto.email);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }

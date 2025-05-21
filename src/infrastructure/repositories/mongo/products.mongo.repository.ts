@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
-import { IUserRepository } from '../../../domain/interfaces/user.repository.interface';
+import { IUserRepository } from '../../../domain/interfaces/users.repository.interface';
 import { User } from '../../../domain/entities/user.entity';
 import { Collection, ObjectId } from 'mongodb';
 import { UserDocument } from './types/user.document';

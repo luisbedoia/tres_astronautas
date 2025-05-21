@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserMongoRepository } from '../../infrastructure/repositories/mongo/user.mongo.repository';
+import { UserMongoRepository } from '../../infrastructure/repositories/mongo/users.mongo.repository';
 
 @Module({
   providers: [
