@@ -18,8 +18,8 @@ describe('AuthService', () => {
     save: jest.Mock;
   };
   let mockCrypto: {
-    hashPassword: jest.Mock;
-    checkPassword: jest.Mock;
+    hash: jest.Mock;
+    compare: jest.Mock;
   };
 
   let mockJwt: { sign: jest.Mock };
@@ -30,8 +30,8 @@ describe('AuthService', () => {
       save: jest.fn(),
     };
     mockCrypto = {
-      hashPassword: jest.fn(),
-      checkPassword: jest.fn(),
+      hash: jest.fn(),
+      compare: jest.fn(),
     };
     mockJwt = {
       sign: jest.fn().mockReturnValue(expectedToken),
@@ -54,7 +54,7 @@ describe('AuthService', () => {
       describe('and email does NOT exist yet', () => {
         beforeEach(() => {
           mockRepo.findByEmail.mockResolvedValue(null);
-          mockCrypto.hashPassword.mockResolvedValue(hashedPassword);
+          mockCrypto.hash.mockResolvedValue(hashedPassword);
           mockRepo.save.mockResolvedValue(expectedUserId);
         });
 
@@ -64,17 +64,19 @@ describe('AuthService', () => {
           expect(mockRepo.findByEmail).toHaveBeenCalledTimes(1);
           expect(mockRepo.findByEmail).toHaveBeenCalledWith(email);
 
-          expect(mockCrypto.hashPassword).toHaveBeenCalledTimes(1);
-          expect(mockCrypto.hashPassword).toHaveBeenCalledWith(password);
+          expect(mockCrypto.hash).toHaveBeenCalledTimes(1);
+          expect(mockCrypto.hash).toHaveBeenCalledWith(password);
 
           expect(mockRepo.save).toHaveBeenCalledTimes(1);
           expect(mockRepo.save).toHaveBeenCalledWith(
-            fullName,
-            email,
-            hashedPassword,
+            expect.objectContaining({
+              fullName,
+              email,
+              password: hashedPassword,
+            }),
           );
 
-          expect(result).toContain(expectedUserId);
+          expect(result.id).toContain(expectedUserId);
         });
       });
 
@@ -94,7 +96,7 @@ describe('AuthService', () => {
           ).rejects.toThrow(ConflictException);
 
           expect(mockRepo.findByEmail).toHaveBeenCalledTimes(1);
-          expect(mockCrypto.hashPassword).not.toHaveBeenCalled();
+          expect(mockCrypto.hash).not.toHaveBeenCalled();
           expect(mockRepo.save).not.toHaveBeenCalled();
         });
       });
@@ -110,7 +112,7 @@ describe('AuthService', () => {
           password: hashedPassword,
           fullName,
         });
-        mockCrypto.checkPassword.mockResolvedValue(true);
+        mockCrypto.compare.mockResolvedValue(true);
       });
 
       it('should validate password and return an accessToken', async () => {
@@ -119,8 +121,8 @@ describe('AuthService', () => {
         expect(mockRepo.findByEmail).toHaveBeenCalledTimes(1);
         expect(mockRepo.findByEmail).toHaveBeenCalledWith(email);
 
-        expect(mockCrypto.checkPassword).toHaveBeenCalledTimes(1);
-        expect(mockCrypto.checkPassword).toHaveBeenCalledWith(
+        expect(mockCrypto.compare).toHaveBeenCalledTimes(1);
+        expect(mockCrypto.compare).toHaveBeenCalledWith(
           password,
           hashedPassword,
         );
@@ -140,7 +142,7 @@ describe('AuthService', () => {
         );
 
         expect(mockRepo.findByEmail).toHaveBeenCalledTimes(1);
-        expect(mockCrypto.checkPassword).not.toHaveBeenCalled();
+        expect(mockCrypto.compare).not.toHaveBeenCalled();
       });
     });
 
@@ -152,7 +154,7 @@ describe('AuthService', () => {
           password: hashedPassword,
           fullName,
         });
-        mockCrypto.checkPassword.mockResolvedValue(false);
+        mockCrypto.compare.mockResolvedValue(false);
       });
 
       it('should throw an UnauthorizedException', async () => {
@@ -161,7 +163,7 @@ describe('AuthService', () => {
         );
 
         expect(mockRepo.findByEmail).toHaveBeenCalledTimes(1);
-        expect(mockCrypto.checkPassword).toHaveBeenCalledTimes(1);
+        expect(mockCrypto.compare).toHaveBeenCalledTimes(1);
       });
     });
   });

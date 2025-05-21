@@ -1,6 +1,5 @@
 import {
   Body,
-  Header,
   Controller,
   Get,
   Post,
@@ -17,6 +16,7 @@ export class ProductController {
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true }))
   create(@Body() dto: CreateProductDto): string {
+    console.log(dto);
     return 'Product created';
   }
 
