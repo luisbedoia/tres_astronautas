@@ -59,7 +59,7 @@ describe('AuthService', () => {
         });
 
         it('should hash the password, save the user and return the new id', async () => {
-          const result = await service.register({fullName, email, password});
+          const result = await service.register({ fullName, email, password });
 
           expect(mockRepo.findByEmail).toHaveBeenCalledTimes(1);
           expect(mockRepo.findByEmail).toHaveBeenCalledWith(email);
@@ -90,7 +90,7 @@ describe('AuthService', () => {
 
         it('should throw a ConflictException and not hash or save', async () => {
           await expect(
-            service.register({fullName, email, password}),
+            service.register({ fullName, email, password }),
           ).rejects.toThrow(ConflictException);
 
           expect(mockRepo.findByEmail).toHaveBeenCalledTimes(1);
@@ -114,7 +114,7 @@ describe('AuthService', () => {
       });
 
       it('should validate password and return an accessToken', async () => {
-        const result = await service.login({email, password});
+        const result = await service.login({ email, password });
 
         expect(mockRepo.findByEmail).toHaveBeenCalledTimes(1);
         expect(mockRepo.findByEmail).toHaveBeenCalledWith(email);
@@ -135,7 +135,7 @@ describe('AuthService', () => {
       });
 
       it('should throw an UnauthorizedException', async () => {
-        await expect(service.login({email, password})).rejects.toThrow(
+        await expect(service.login({ email, password })).rejects.toThrow(
           UnauthorizedException,
         );
 
@@ -156,7 +156,7 @@ describe('AuthService', () => {
       });
 
       it('should throw an UnauthorizedException', async () => {
-        await expect(service.login({email, password})).rejects.toThrow(
+        await expect(service.login({ email, password })).rejects.toThrow(
           UnauthorizedException,
         );
 

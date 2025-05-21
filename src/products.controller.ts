@@ -16,9 +16,7 @@ export class ProductController {
 
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  create(
-    @Body() dto: CreateProductDto,
-  ): string {
+  create(@Body() dto: CreateProductDto): string {
     return 'Product created';
   }
 
