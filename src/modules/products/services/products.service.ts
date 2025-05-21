@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   Inject,
   BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { Product } from '../../../domain/entities/product.entity';
 import { IProductsRepository } from '../../../domain/interfaces/products.repository.interface';
@@ -31,12 +32,20 @@ export class ProductsService {
       throw new UnauthorizedException('Unauthorized');
     }
 
+    const product = await this.productsRepository.findByProductIdAndOwnerId(
+      productId,
+      ownerId,
+    );
+    if (product) {
+      throw new ConflictException('Product already exists');
+    }
+
     const isValid = await this.coreService.validateProduct(productId, price);
     if (!isValid) {
       throw new BadRequestException('Invalid product price');
     }
 
-    const product = Product.create(productId, name, price, ownerId);
-    return await this.productsRepository.save(product);
+    const newProduct = Product.create(productId, name, price, ownerId);
+    return await this.productsRepository.save(newProduct);
   }
 }

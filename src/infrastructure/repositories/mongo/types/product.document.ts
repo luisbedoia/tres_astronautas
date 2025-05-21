@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 
 export interface ProductDocument {
   _id?: ObjectId;
+  productId: number;
   name: string;
   price: number;
   status: string;

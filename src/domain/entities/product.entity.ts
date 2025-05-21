@@ -33,4 +33,17 @@ export class Product {
       updatedAt: new Date(),
     });
   }
+
+  static fromData(data: Product): Product {
+    return new Product({
+      id: data.id,
+      productId: data.productId,
+      name: data.name,
+      price: data.price,
+      ownerId: data.ownerId,
+      status: data.status,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    });
+  }
 }
