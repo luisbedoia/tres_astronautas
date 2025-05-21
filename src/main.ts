@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
-import * as helmet from 'helmet';
+import helmet from 'helmet';
 
 const config = new DocumentBuilder()
   .setTitle('Tres Astronautas API')
@@ -16,7 +16,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  app.use(helmet.default());
+  app.use(helmet());
   app.enableCors();
 
   app.useGlobalPipes(
