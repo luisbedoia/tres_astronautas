@@ -6,7 +6,10 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { Product } from '../../../domain/entities/product.entity';
+import {
+  Product,
+  ProductStatus,
+} from '../../../domain/entities/product.entity';
 import { IProductsRepository } from '../../../domain/interfaces/products.repository.interface';
 import { IUsersRepository } from '../../../domain/interfaces/users.repository.interface';
 import { ICoreService } from '../../../domain/interfaces/core.service.interface';
@@ -78,6 +81,22 @@ export class ProductsService {
     product.setName(newName);
     product.setPrice(newPrice);
 
+    await this.productsRepository.save(product);
+    return product;
+  }
+
+  async deactivate(productId: number, ownerId: string): Promise<Product> {
+    const product = await this.productsRepository.findByProductIdAndOwnerId(
+      productId,
+      ownerId,
+    );
+    if (!product) {
+      throw new NotFoundException([
+        `productId: ${productId} already exists for the user`,
+      ]);
+    }
+
+    product.setStatus(ProductStatus.INACTIVE);
     await this.productsRepository.save(product);
     return product;
   }

@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Put, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -60,6 +68,20 @@ export class ProductsController {
       editProductDto.price,
       user.sub,
     );
+
+    return ProductDetailDto.fromProduct(product);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Deactivate a product' })
+  @ApiResponse({ status: 200, description: 'Product deactivated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async deactivateProduct(
+    @Param() params: EditProductIdDto,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ProductDetailDto> {
+    const product = await this.productsService.deactivate(params.id, user.sub);
 
     return ProductDetailDto.fromProduct(product);
   }
