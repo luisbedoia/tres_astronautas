@@ -24,6 +24,7 @@ describe('ProductsService', () => {
   let mockProductsRepo: {
     findByProductIdAndOwnerId: jest.Mock;
     save: jest.Mock;
+    update: jest.Mock;
   };
   let mockUsersRepo: {
     findById: jest.Mock;
@@ -36,6 +37,7 @@ describe('ProductsService', () => {
     mockProductsRepo = {
       findByProductIdAndOwnerId: jest.fn(),
       save: jest.fn(),
+      update: jest.fn(),
     };
     mockUsersRepo = {
       findById: jest.fn(),
@@ -217,7 +219,7 @@ describe('ProductsService', () => {
             productId,
             newPrice,
           );
-          expect(mockProductsRepo.save).toHaveBeenCalledWith(
+          expect(mockProductsRepo.update).toHaveBeenCalledWith(
             expect.objectContaining({
               id: productDbId,
               productId,
@@ -305,7 +307,7 @@ describe('ProductsService', () => {
           productId,
           ownerId,
         );
-        expect(mockProductsRepo.save).toHaveBeenCalledWith(
+        expect(mockProductsRepo.update).toHaveBeenCalledWith(
           expect.objectContaining({
             id: productDbId,
             productId,
