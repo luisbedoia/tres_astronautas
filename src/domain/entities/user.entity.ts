@@ -1,13 +1,26 @@
+export interface UserProps {
+  id?: string;
+  fullName?: string;
+  email?: string;
+  password?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 export class User {
-  id: string;
-  fullName: string;
-  email: string;
-  password: string;
-  createdAt: Date;
-  updatedAt: Date;
+  private id: string;
+  private fullName: string;
+  private email: string;
+  private password: string;
+  private createdAt: Date;
+  private updatedAt: Date;
 
-  constructor(partial: Partial<User>) {
-    Object.assign(this, partial);
+  constructor(partial: UserProps) {
+    this.id = partial.id ?? '';
+    this.fullName = partial.fullName ?? '';
+    this.email = partial.email ?? '';
+    this.password = partial.password ?? '';
+    this.createdAt = partial.createdAt ?? new Date();
+    this.updatedAt = partial.updatedAt ?? new Date();
   }
 
   static create(fullName: string, email: string, password: string): User {
@@ -21,7 +34,7 @@ export class User {
     });
   }
 
-  static fromData(data: User): User {
+  static fromData(data: UserProps): User {
     return new User({
       id: data.id,
       fullName: data.fullName,
@@ -30,5 +43,16 @@ export class User {
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     });
+  }
+
+  public getProps(): UserProps {
+    return {
+      id: this.id,
+      fullName: this.fullName,
+      email: this.email,
+      password: this.password,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
   }
 }

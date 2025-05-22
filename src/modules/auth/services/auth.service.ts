@@ -45,16 +45,18 @@ export class AuthService {
       throw new UnauthorizedException(['Invalid credentials']);
     }
 
+    const { id, password, email } = user.getProps();
+
     const isPasswordValid = await this.crypto.compare(
       loginDto.password,
-      user.password,
+      password!,
     );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException(['Invalid credentials']);
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: id!, email: email! };
     return {
       accessToken: this.jwtService.sign(payload),
     };

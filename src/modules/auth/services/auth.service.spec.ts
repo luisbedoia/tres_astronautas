@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '../../../domain/entities/user.entity';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -82,12 +83,14 @@ describe('AuthService', () => {
 
       describe('and email ALREADY exists', () => {
         beforeEach(() => {
-          mockRepo.findByEmail.mockResolvedValue({
-            id: 'x',
-            email,
-            password: 'foo',
-            fullName,
-          });
+          mockRepo.findByEmail.mockResolvedValue(
+            User.fromData({
+              id: 'x',
+              email,
+              password: 'foo',
+              fullName,
+            }),
+          );
         });
 
         it('should throw a ConflictException and not hash or save', async () => {
@@ -106,12 +109,14 @@ describe('AuthService', () => {
   describe('login', () => {
     describe('when credentials are valid', () => {
       beforeEach(() => {
-        mockRepo.findByEmail.mockResolvedValue({
-          id: expectedUserId,
-          email,
-          password: hashedPassword,
-          fullName,
-        });
+        mockRepo.findByEmail.mockResolvedValue(
+          User.fromData({
+            id: expectedUserId,
+            email,
+            password: hashedPassword,
+            fullName,
+          }),
+        );
         mockCrypto.compare.mockResolvedValue(true);
       });
 
@@ -148,12 +153,14 @@ describe('AuthService', () => {
 
     describe('when password is incorrect', () => {
       beforeEach(() => {
-        mockRepo.findByEmail.mockResolvedValue({
-          id: expectedUserId,
-          email,
-          password: hashedPassword,
-          fullName,
-        });
+        mockRepo.findByEmail.mockResolvedValue(
+          User.fromData({
+            id: expectedUserId,
+            email,
+            password: hashedPassword,
+            fullName,
+          }),
+        );
         mockCrypto.compare.mockResolvedValue(false);
       });
 
