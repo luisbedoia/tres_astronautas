@@ -15,6 +15,7 @@ describe('ProductsController', () => {
     create: jest.fn(),
     edit: jest.fn(),
     deactivate: jest.fn(),
+    getProducts: jest.fn(),
   };
 
   const userId = 'user_123';
@@ -215,6 +216,91 @@ describe('ProductsController', () => {
 
       expect(productsService.deactivate).toHaveBeenCalledWith(
         productId,
+        userId,
+      );
+    });
+  });
+
+  describe('getProducts', () => {
+    const mockUser = {
+      sub: userId,
+      email: 'test@test.com',
+    };
+
+    const mockProducts = [
+      Product.fromData({
+        id: productDbId,
+        productId: 1,
+        name: 'Product 1',
+        price: 100,
+        ownerId: userId,
+        status: ProductStatus.ACTIVE,
+      }),
+      Product.fromData({
+        id: 'product_456',
+        productId: 2,
+        name: 'Product 2',
+        price: 200,
+        ownerId: userId,
+        status: ProductStatus.ACTIVE,
+      }),
+    ];
+
+    it('should return products list and total count', async () => {
+      const page = 1;
+      const limit = 10;
+      const total = 2;
+
+      mockProductsService.getProducts.mockResolvedValue({
+        products: mockProducts,
+        total,
+      });
+
+      const result = await controller.getProducts({ page, limit }, mockUser);
+
+      expect(result).toEqual({
+        products: mockProducts.map((product) => ({
+          id: product.getProps().id,
+          productId: product.getProps().productId,
+          name: product.getProps().name,
+          price: product.getProps().price,
+          ownerId: product.getProps().ownerId,
+          status: product.getProps().status,
+        })),
+        total,
+        page,
+        limit,
+      });
+
+      expect(productsService.getProducts).toHaveBeenCalledWith(
+        page,
+        limit,
+        userId,
+      );
+    });
+
+    it('should handle empty results', async () => {
+      const page = 1;
+      const limit = 10;
+      const total = 0;
+
+      mockProductsService.getProducts.mockResolvedValue({
+        products: [],
+        total,
+      });
+
+      const result = await controller.getProducts({ page, limit }, mockUser);
+
+      expect(result).toEqual({
+        products: [],
+        total: 0,
+        page,
+        limit,
+      });
+
+      expect(productsService.getProducts).toHaveBeenCalledWith(
+        page,
+        limit,
         userId,
       );
     });

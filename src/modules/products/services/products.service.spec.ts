@@ -25,6 +25,7 @@ describe('ProductsService', () => {
     findByProductIdAndOwnerId: jest.Mock;
     save: jest.Mock;
     update: jest.Mock;
+    findByOwnerId: jest.Mock;
   };
   let mockUsersRepo: {
     findById: jest.Mock;
@@ -38,6 +39,7 @@ describe('ProductsService', () => {
       findByProductIdAndOwnerId: jest.fn(),
       save: jest.fn(),
       update: jest.fn(),
+      findByOwnerId: jest.fn(),
     };
     mockUsersRepo = {
       findById: jest.fn(),
@@ -346,6 +348,68 @@ describe('ProductsService', () => {
           ownerId,
         );
         expect(mockProductsRepo.save).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('getProducts', () => {
+    const page = 1;
+    const limit = 10;
+    const mockProducts = [
+      Product.fromData({
+        id: productDbId,
+        productId: 1,
+        name: 'Product 1',
+        price: 100,
+        ownerId,
+        status: ProductStatus.ACTIVE,
+      }),
+      Product.fromData({
+        id: 'product_456',
+        productId: 2,
+        name: 'Product 2',
+        price: 200,
+        ownerId,
+        status: ProductStatus.ACTIVE,
+      }),
+    ];
+
+    it('should return products and total count', async () => {
+      const total = 2;
+      mockProductsRepo.findByOwnerId.mockResolvedValue({
+        products: mockProducts,
+        total,
+      });
+
+      const result = await service.getProducts(page, limit, ownerId);
+
+      expect(mockProductsRepo.findByOwnerId).toHaveBeenCalledWith(
+        ownerId,
+        page,
+        limit,
+      );
+      expect(result).toEqual({
+        products: mockProducts,
+        total,
+      });
+    });
+
+    it('should handle empty results', async () => {
+      mockProductsRepo.findByOwnerId.mockResolvedValue({
+        products: [],
+        total: 0,
+      });
+
+      const result = await service.getProducts(page, limit, ownerId);
+
+      expect(mockProductsRepo.findByOwnerId).toHaveBeenCalledWith(
+        ownerId,
+        page,
+        limit,
+      );
+      expect(result).toEqual({
+        products: [],
+        total: 0,
       });
     });
   });
