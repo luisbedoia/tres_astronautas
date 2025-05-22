@@ -100,4 +100,17 @@ export class ProductsService {
     await this.productsRepository.save(product);
     return product;
   }
+
+  async getProducts(
+    page: number,
+    limit: number,
+    ownerId: string,
+  ): Promise<{ products: Product[]; total: number }> {
+    const { products, total } = await this.productsRepository.findByOwnerId(
+      ownerId,
+      page,
+      limit,
+    );
+    return { products, total };
+  }
 }

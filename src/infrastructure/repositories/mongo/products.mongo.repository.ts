@@ -44,15 +44,40 @@ export class ProductsMongoRepository implements IProductsRepository {
       return null;
     }
 
+    return this.mapProduct(doc);
+  }
+
+  async findByOwnerId(
+    ownerId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ products: Product[]; total: number }> {
+    const products = await this.getCollection()
+      .find({ ownerId: new ObjectId(ownerId) })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .toArray();
+
+    const total = await this.getCollection().countDocuments({
+      ownerId: new ObjectId(ownerId),
+    });
+
+    return {
+      products: products.map(this.mapProduct),
+      total,
+    };
+  }
+
+  private mapProduct(product: ProductDocument): Product {
     return Product.fromData({
-      id: doc._id.toString(),
-      productId: doc.productId,
-      name: doc.name,
-      price: doc.price,
-      ownerId: doc.ownerId?.toString(),
-      status: doc.status as ProductStatus,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
+      id: product._id!.toString(),
+      productId: product.productId,
+      name: product.name,
+      price: product.price,
+      ownerId: product.ownerId?.toString(),
+      status: product.status as ProductStatus,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
     });
   }
 }

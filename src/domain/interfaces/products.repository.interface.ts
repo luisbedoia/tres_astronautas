@@ -6,4 +6,9 @@ export interface IProductsRepository {
     productId: number,
     ownerId: string,
   ): Promise<Product | null>;
+  findByOwnerId(
+    ownerId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ products: Product[]; total: number }>;
 }

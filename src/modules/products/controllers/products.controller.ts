@@ -6,6 +6,8 @@ import {
   Put,
   Param,
   Delete,
+  Query,
+  Get,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +23,10 @@ import { JwtPayload } from '../../../common/interfaces/jwt-payload.interface';
 import { Product } from '../../../domain/entities/product.entity';
 import { EditProductDto, EditProductIdDto } from '../dto/edit-product.dto';
 import { ProductDetailDto } from '../dto/product-detail.dto';
+import {
+  PaginatedProductsRequestDto,
+  PaginatedProductsResponseDto,
+} from '../dto/paginated-products.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -84,5 +90,27 @@ export class ProductsController {
     const product = await this.productsService.deactivate(params.id, user.sub);
 
     return ProductDetailDto.fromProduct(product);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all products' })
+  @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getProducts(
+    @Query() query: PaginatedProductsRequestDto,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<PaginatedProductsResponseDto> {
+    const { products, total } = await this.productsService.getProducts(
+      query.page,
+      query.limit,
+      user.sub,
+    );
+
+    return PaginatedProductsResponseDto.fromProducts(
+      products,
+      total,
+      query.page,
+      query.limit,
+    );
   }
 }
