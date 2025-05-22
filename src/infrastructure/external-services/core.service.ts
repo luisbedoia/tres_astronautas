@@ -1,30 +1,36 @@
+import { Injectable } from '@nestjs/common';
 import { ICoreService } from '../../domain/interfaces/core.service.interface';
+import { ValidateProductResponse } from '../../domain/interfaces/validate-product-response.interface';
+import { CustomLogger } from '../logger/logger.service';
 
-interface ValidateProductResponse {
-  isValid: boolean;
-  message: string;
-}
-
+@Injectable()
 export class CoreService implements ICoreService {
-  async validateProduct(productId: number, price: number): Promise<boolean> {
+  constructor(private readonly logger: CustomLogger) {}
+
+  validateProduct(productId: number, price: number): Promise<boolean> {
     try {
-      const response = await this.simulateHttpCall(price);
-      return response.isValid;
+      const response = this.simulateHttpCall(price);
+      return Promise.resolve(response.isValid);
     } catch (error) {
-      console.error('Error validating product:', error);
-      return false;
+      this.logger.error(
+        'Error validating product',
+        error instanceof Error ? error.stack : 'Unknown error',
+        'CoreService',
+      );
+      return Promise.resolve(false);
     }
   }
 
-  private async simulateHttpCall(
-    price: number,
-  ): Promise<ValidateProductResponse> {
+  private simulateHttpCall(price: number): ValidateProductResponse {
     const isValid = price > 10;
-    return await Promise.resolve({
+    if (!isValid) {
+      this.logger.error('Price must be greater than 10', 'CoreService');
+    }
+    return {
       isValid,
       message: isValid
         ? 'Product validation successful'
         : 'Price must be greater than 10',
-    });
+    };
   }
 }
