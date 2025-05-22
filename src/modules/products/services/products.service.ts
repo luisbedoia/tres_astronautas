@@ -80,8 +80,9 @@ export class ProductsService {
 
     product.setName(newName);
     product.setPrice(newPrice);
+    product.updateDate();
 
-    await this.productsRepository.save(product);
+    await this.productsRepository.update(product);
     return product;
   }
 
@@ -97,7 +98,8 @@ export class ProductsService {
     }
 
     product.setStatus(ProductStatus.INACTIVE);
-    await this.productsRepository.save(product);
+    product.updateDate();
+    await this.productsRepository.update(product);
     return product;
   }
 

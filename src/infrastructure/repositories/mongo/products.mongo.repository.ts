@@ -31,6 +31,21 @@ export class ProductsMongoRepository implements IProductsRepository {
     return result.insertedId.toString();
   }
 
+  async update(product: Product): Promise<Product> {
+    const { id, ownerId, ...productData } = product.getProps();
+    const doc: ProductDocument = {
+      ...productData,
+      ownerId: new ObjectId(ownerId),
+    };
+
+    await this.getCollection().updateOne(
+      { _id: new ObjectId(id) },
+      { $set: doc },
+    );
+
+    return product;
+  }
+
   async findByProductIdAndOwnerId(
     productId: number,
     ownerId: string,

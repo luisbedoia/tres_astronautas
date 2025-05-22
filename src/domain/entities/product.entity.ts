@@ -79,6 +79,10 @@ export class Product {
     this.status = status;
   }
 
+  updateDate() {
+    this.updatedAt = new Date();
+  }
+
   getProps(): ProductProps {
     return {
       id: this.id,
