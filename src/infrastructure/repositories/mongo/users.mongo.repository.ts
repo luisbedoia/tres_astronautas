@@ -16,7 +16,7 @@ export class UsersMongoRepository implements IUsersRepository {
   }
 
   async save(data: User): Promise<string> {
-    const { id: _, ...userData } = data;
+    const { id: _, ...userData } = data.getProps();
     const doc: UserDocument = {
       ...userData,
       createdAt: new Date(),

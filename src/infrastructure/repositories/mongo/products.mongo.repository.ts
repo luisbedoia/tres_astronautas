@@ -19,7 +19,7 @@ export class ProductsMongoRepository implements IProductsRepository {
   }
 
   async save(data: Product): Promise<string> {
-    const { id: _, ownerId, ...productData } = data;
+    const { id: _, ownerId, ...productData } = data.getProps();
     const doc: ProductDocument = {
       ...productData,
       ownerId: new ObjectId(ownerId),
@@ -49,7 +49,7 @@ export class ProductsMongoRepository implements IProductsRepository {
       productId: doc.productId,
       name: doc.name,
       price: doc.price,
-      ownerId: doc.ownerId.toString(),
+      ownerId: doc.ownerId?.toString(),
       status: doc.status as ProductStatus,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,

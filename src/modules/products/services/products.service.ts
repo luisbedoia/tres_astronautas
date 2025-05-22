@@ -4,6 +4,7 @@ import {
   Inject,
   BadRequestException,
   ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Product } from '../../../domain/entities/product.entity';
 import { IProductsRepository } from '../../../domain/interfaces/products.repository.interface';
@@ -26,7 +27,7 @@ export class ProductsService {
     name: string,
     price: number,
     ownerId: string,
-  ): Promise<string> {
+  ): Promise<Product> {
     const user = await this.usersRepository.findById(ownerId);
     if (!user) {
       throw new UnauthorizedException('Unauthorized');
@@ -48,6 +49,36 @@ export class ProductsService {
     }
 
     const newProduct = Product.create(productId, name, price, ownerId);
-    return await this.productsRepository.save(newProduct);
+    const id = await this.productsRepository.save(newProduct);
+    newProduct.setId(id);
+    return newProduct;
+  }
+
+  async edit(
+    productId: number,
+    newName: string,
+    newPrice: number,
+    ownerId: string,
+  ): Promise<Product> {
+    const product = await this.productsRepository.findByProductIdAndOwnerId(
+      productId,
+      ownerId,
+    );
+    if (!product) {
+      throw new NotFoundException([
+        `productId: ${productId} not found for the user`,
+      ]);
+    }
+
+    const isValid = await this.coreService.validateProduct(productId, newPrice);
+    if (!isValid) {
+      throw new BadRequestException(['Product price must be greater than 10']);
+    }
+
+    product.setName(newName);
+    product.setPrice(newPrice);
+
+    await this.productsRepository.save(product);
+    return product;
   }
 }

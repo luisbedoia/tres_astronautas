@@ -12,6 +12,7 @@ import { CurrentUser } from '../../../common/decorators/current-user.decorator';
 import { JwtPayload } from '../../../common/interfaces/jwt-payload.interface';
 import { Product } from '../../../domain/entities/product.entity';
 import { EditProductDto, EditProductIdDto } from '../dto/edit-product.dto';
+import { ProductDetailDto } from '../dto/product-detail.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -32,13 +33,15 @@ export class ProductsController {
   async createProduct(
     @Body() createProductDto: CreateProductDto,
     @CurrentUser() user: JwtPayload,
-  ): Promise<string> {
-    return this.productsService.create(
+  ): Promise<ProductDetailDto> {
+    const product = await this.productsService.create(
       createProductDto.productId,
       createProductDto.name,
       createProductDto.price,
       user.sub,
     );
+
+    return ProductDetailDto.fromProduct(product);
   }
 
   @Put(':id')
@@ -50,11 +53,14 @@ export class ProductsController {
     @Param() params: EditProductIdDto,
     @Body() editProductDto: EditProductDto,
     @CurrentUser() user: JwtPayload,
-  ): Promise<string> {
-    console.log(params.id);
-    console.log(editProductDto);
-    console.log(user);
-    return await Promise.resolve('ok');
-    // return this.productsService.edit(id, editProductDto, user.sub);
+  ): Promise<ProductDetailDto> {
+    const product = await this.productsService.edit(
+      params.id,
+      editProductDto.name,
+      editProductDto.price,
+      user.sub,
+    );
+
+    return ProductDetailDto.fromProduct(product);
   }
 }
